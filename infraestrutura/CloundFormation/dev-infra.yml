@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: '2024-06-09'
+Description: AWS Infrastructure for wishList
+
+Parameters:
+  InstanceType:
+    Type: String
+    Default: t2.micro
+    Description: EC2 instance type
+    AllowedValues:
+      - t2.micro
+      - t2.small
+      - t2.medium
+    ConstraintDescription: Validator only magalu format
+
+Resources:
+  MyEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: rds.sa-east-1.amazonaws.com.MagaluGroupDev.ambiente
+      KeyName: AWS::EC2::SecurityGroup-5cd1a909fbe7c0c4d8bf4379692735f1cf2655cdb0aaa4d43d7b03d640263189-v6nPZnCrdcgRaic4lHYf8WY1NSLdykrTKZiB1A/7eB0=
+      SecurityGroups:
+        - !Ref MagaluGroupDev
+
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH access
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 179.191.168.42/0
+
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: magalu-clound-dev
+
+  MyRDSInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: dbDevMaga
+      AllocatedStorage: '20'
+      DBInstanceClass: db.t2.micro
+      Engine: MySQL
+      MasterUsername: mydbuser
+      MasterUserPassword: 5cd1a909fbe7c0c4d8bf4379692735f1cf2655cdb0aaa4d43d7b03d640263189
+      DBName: dbDev
+
+Outputs:
+  EC2InstanceId:
+    Description: Instance of wishlist products sales
+    Value: !Ref MyEC2Instance
